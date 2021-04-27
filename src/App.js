@@ -5,31 +5,31 @@ import Checkbox from "./Checkbox";
 
 const OPTIONS = [
     'Beds',
-    'ICU',
     'Oxygen',
     'Ventilator',
-    'Tests',
+    'ICU',
     'Fabiflu',
+    'Plasma',
     'Remdesivir',
     'Favipiravir',
     'Tocilizumab',
-    'Plasma',
+    'Tests',
 ];
 
 const POPULAR_CITIES = [
+    'Mumbai',
     'Delhi',
     'Pune',
-    'Mumbai',
     'Bangalore',
+    'Ahmedabad',
     'Thane',
     'Hyderabad',
     'Nagpur',
+    'Jaipur',
     'Lucknow',
-    'Ahmedabad',
     'Chennai',
     'Kolkata',
     'Goa',
-    'Jaipur'
 ];
 
 class App extends React.Component {
@@ -75,19 +75,29 @@ class App extends React.Component {
     handleFormSubmit = formSubmitEvent => {
         formSubmitEvent.preventDefault();
 
-        var link = "https://twitter.com/search?q="+ (this.state.verified ? "verified+" : "") + this.state.city
+        if(this.state.city === ''){
+            alert('Please enter city name.');
+        }
+        else {
 
-        Object.keys(this.state.checkboxes)
-            .filter(checkbox => this.state.checkboxes[checkbox])
-            .forEach(checkbox => {
-                link += "+OR+"+checkbox;
-            });
+            var link = "https://twitter.com/search?f=live&q=" + (this.state.verified ? "verified+" : "") + this.state.city
 
-        window.location = link;
+            link += "+(+";
+
+            Object.keys(this.state.checkboxes)
+                .filter(checkbox => this.state.checkboxes[checkbox])
+                .forEach((checkbox, index) => {
+                    link += ((index !== 0) ? "+OR+" : "") + checkbox;
+                });
+
+            link += "+)+";
+
+            window.location = link;
+        }
     };
 
     handleVerified = event => {
-        this.setState({verified: event.target.value});
+        this.setState({verified: !this.state.verified});
     };
 
     createCheckbox = option => (
@@ -132,7 +142,7 @@ class App extends React.Component {
                             </div>
                             <form onSubmit={this.handleFormSubmit} style={{margin: '12px 0px'}}>
                                 <label>Name of the city:<br/>
-                                <input type="text" value={this.state.city} onChange={this.handleCity}/> </label>
+                                <input type="text" value={this.state.city} onChange={this.handleCity} noValidate/> </label>
                                 <Checkbox
                                     label="Verified"
                                     isSelected={this.state.verified}
